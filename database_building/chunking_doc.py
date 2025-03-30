@@ -31,6 +31,9 @@ for filename in os.listdir(folder_path):
 # Convert the chunked data into a DataFrame
 df_chunked = pd.DataFrame(chunked_data)
 
+# Assign a unique ID to each chunk based on the DataFrame's index
+df_chunked['id'] = df_chunked.index
+
 # Compute word counts for chunks
 df_chunked['chunk_word_count'] = df_chunked['text_chunk'].apply(lambda x: len(x.split()))
 df_chunked['chunk_sentence_count'] = df_chunked['text_chunk'].apply(lambda x: len(split_into_sentences(x)))
