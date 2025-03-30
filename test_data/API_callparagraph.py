@@ -18,6 +18,7 @@ MODEL = "gpt-4o-mini"
 
 # Initialize a list to store the output data
 output_data = []
+output_file_path = 'test_data/paragraph_full.json'  # Update with your desired output file path
 
 # Iterate over the sampled paragraphs and generate questions
 for index, row in tqdm(sampled_df.iterrows(), total=sample_size):
@@ -48,6 +49,12 @@ for index, row in tqdm(sampled_df.iterrows(), total=sample_size):
         response_content = completion.choices[0].message.content.strip()
         questions = [q.strip() for q in response_content.split("\n") if q.strip()]
 
+        result = {
+            "paragraph_id": paragraph_id,
+            "paragraph_text": paragraph_text,
+            "questions": questions
+        }
+
         # Store the results
         output_data.append({
             "paragraph_id": paragraph_id,
@@ -56,10 +63,12 @@ for index, row in tqdm(sampled_df.iterrows(), total=sample_size):
         })
     except Exception as e:
         print(f"Error processing paragraph ID {paragraph_id}: {e}")
+    with open(output_file_path, 'a', encoding='utf-8') as f:
+        f.write(json.dumps(result, ensure_ascii=False) + "\n")
 
-# Save the output data to a JSON file
-output_file_path = 'test_data/paragraph_full.json'  # Update with your desired output file path
-with open(output_file_path, 'a', encoding='utf-8') as f:
+
+backup_file = "paragraph_full_backup.json"
+with open(backup_file, 'a', encoding='utf-8') as f:
     json.dump(output_data, f, ensure_ascii=False, indent=4)
-
 print(f"Generated questions saved to {output_file_path}")
+print(f"Backup saved to {backup_file}")
